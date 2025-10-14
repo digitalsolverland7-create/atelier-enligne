@@ -1,0 +1,839 @@
+# Prompt Complet pour Atelier Enligne
+
+## 🎯 Vision du Projet
+
+**Atelier Enligne** est une plateforme web de personnalisation et d'impression de produits physiques avec visualisation 3D en temps réel. La plateforme permet aux utilisateurs de créer des designs personnalisés, de les visualiser sur des produits 3D réalistes, de passer commande, et même de revendre leurs créations via une boutique intégrée.
+
+### Objectif Business
+- Capter des clients via réseaux sociaux (Facebook, Instagram, etc.)
+- Les diriger vers la plateforme pour créer leurs produits personnalisés
+- Offrir une expérience de création fluide et professionnelle
+- Permettre aux utilisateurs de devenir revendeurs (marketplace intégrée)
+
+---
+
+## 🏗️ Architecture Technique
+
+### Stack Technologique Principal
+
+```
+Frontend:
+- React 18+ avec TypeScript
+- Vite (build tool - rapide et moderne)
+- React Router v6 (navigation)
+- Tailwind CSS (styling responsive)
+- Zustand (state management - simple et performant)
+
+3D Engine:
+- Babylon.js (rendu 3D principal)
+- @babylonjs/core
+- @babylonjs/loaders
+- @babylonjs/materials
+
+Manipulation 2D/Design:
+- Fabric.js (manipulation canvas 2D avant application 3D)
+- react-dropzone (upload de fichiers)
+- react-color (color picker)
+
+Storage:
+- localStorage/sessionStorage (phase 1)
+- Architecture prête pour Supabase (phase 2)
+
+Utilitaires:
+- axios (requêtes HTTP)
+- date-fns (manipulation dates)
+- react-hot-toast (notifications)
+- framer-motion (animations fluides)
+- react-share (partage réseaux sociaux)
+- html2canvas (capture screenshots pour partage)
+```
+
+### Structure du Projet
+
+```
+atelier-enligne/
+├── public/
+│   ├── models/           # Modèles 3D (.glb, .babylon)
+│   ├── textures/         # Textures de base
+│   └── assets/           # Images, icônes
+├── src/
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── Header.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   └── Sidebar.tsx
+│   │   ├── common/
+│   │   │   ├── Button.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   ├── Card.tsx
+│   │   │   ├── Loader.tsx
+│   │   │   └── Toast.tsx
+│   │   ├── auth/
+│   │   │   ├── LoginForm.tsx
+│   │   │   ├── RegisterForm.tsx
+│   │   │   └── GuestPrompt.tsx
+│   │   ├── products/
+│   │   │   ├── ProductGrid.tsx
+│   │   │   ├── ProductCard.tsx
+│   │   │   ├── ProductFilter.tsx
+│   │   │   └── ProductDetail.tsx
+│   │   ├── atelier/
+│   │   │   ├── AtelierCanvas.tsx      # Composant principal
+│   │   │   ├── Scene3D.tsx            # Scene Babylon.js
+│   │   │   ├── DesignControls.tsx     # Contrôles de design
+│   │   │   ├── ToolPanel.tsx          # Panneau d'outils
+│   │   │   ├── LayerPanel.tsx         # Gestion des calques
+│   │   │   ├── TextTool.tsx           # Ajout de texte
+│   │   │   ├── ImageUploader.tsx      # Upload logo
+│   │   │   ├── ColorPicker.tsx        # Sélection couleurs
+│   │   │   ├── ViewControls.tsx       # Rotation/zoom 3D
+│   │   │   └── SavePanel.tsx          # Sauvegarde/export
+│   │   ├── shop/
+│   │   │   ├── MyShop.tsx             # Boutique personnelle
+│   │   │   ├── ShopSettings.tsx       # Configuration boutique
+│   │   │   ├── ProductListing.tsx     # Liste produits boutique
+│   │   │   ├── PublicShop.tsx         # Vue publique boutique
+│   │   │   └── ShopStats.tsx          # Statistiques ventes
+│   │   ├── orders/
+│   │   │   ├── OrderList.tsx
+│   │   │   ├── OrderDetail.tsx
+│   │   │   ├── OrderTracking.tsx
+│   │   │   └── Checkout.tsx
+│   │   ├── social/
+│   │   │   ├── ShareButtons.tsx
+│   │   │   ├── CommentSection.tsx
+│   │   │   ├── LikeButton.tsx
+│   │   │   └── SocialPreview.tsx
+│   │   └── gallery/
+│   │       ├── DesignGallery.tsx
+│   │       ├── GalleryCard.tsx
+│   │       └── GalleryFilters.tsx
+│   ├── pages/
+│   │   ├── Home.tsx
+│   │   ├── Products.tsx
+│   │   ├── Atelier.tsx              # PAGE PRINCIPALE
+│   │   ├── MyDesigns.tsx
+│   │   ├── MyOrders.tsx
+│   │   ├── MyShop.tsx
+│   │   ├── Shop.tsx                 # Marketplace
+│   │   ├── ShopDetail.tsx           # Boutique d'un utilisateur
+│   │   ├── DesignDetail.tsx         # Détail d'une création
+│   │   ├── Profile.tsx
+│   │   └── NotFound.tsx
+│   ├── stores/
+│   │   ├── authStore.ts
+│   │   ├── designStore.ts
+│   │   ├── productStore.ts
+│   │   ├── cartStore.ts
+│   │   ├── shopStore.ts
+│   │   └── uiStore.ts
+│   ├── services/
+│   │   ├── storage.service.ts       # Abstraction localStorage/Supabase
+│   │   ├── auth.service.ts
+│   │   ├── design.service.ts
+│   │   ├── product.service.ts
+│   │   ├── order.service.ts
+│   │   ├── shop.service.ts
+│   │   ├── babylon.service.ts       # Helpers Babylon.js
+│   │   └── export.service.ts        # Export images/3D
+│   ├── hooks/
+│   │   ├── useAuth.ts
+│   │   ├── useDesign.ts
+│   │   ├── use3DScene.ts
+│   │   ├── useLocalStorage.ts
+│   │   └── useAutoSave.ts
+│   ├── utils/
+│   │   ├── constants.ts
+│   │   ├── helpers.ts
+│   │   ├── validators.ts
+│   │   └── imageProcessor.ts
+│   ├── types/
+│   │   ├── index.ts
+│   │   ├── user.types.ts
+│   │   ├── design.types.ts
+│   │   ├── product.types.ts
+│   │   ├── order.types.ts
+│   │   └── shop.types.ts
+│   ├── styles/
+│   │   └── globals.css
+│   ├── App.tsx
+│   └── main.tsx
+├── .env.example
+├── .gitignore
+├── package.json
+├── tsconfig.json
+├── tailwind.config.js
+├── vite.config.ts
+└── README.md
+```
+
+---
+
+## 📋 Spécifications Détaillées par Module
+
+### 1. Module d'Authentification
+
+#### Fonctionnalités
+- **Mode Invité**: Permettre la navigation et création sans compte
+  - Stocker session temporaire dans sessionStorage
+  - Promouvoir inscription avant finalisation commande
+  - Récupérer les créations après inscription
+
+- **Inscription**:
+  - Email + mot de passe
+  - Nom + prénom
+  - Nom de boutique (optionnel, peut être ajouté plus tard)
+  - Validation côté client (regex email, mdp min 8 caractères)
+
+- **Connexion**:
+  - Email + mot de passe
+  - Option "Se souvenir de moi" (localStorage)
+  - Lien "Mot de passe oublié" (prêt pour implémentation future)
+
+- **État d'authentification**:
+  - Persister dans localStorage: `{ userId, email, name, shopName, token, expiresAt }`
+  - Vérifier au chargement de l'app
+  - Auto-refresh si token valide
+
+#### Interface localStorage (Phase 1)
+```typescript
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  shopName?: string;
+  createdAt: string;
+  isGuest: boolean;
+}
+
+// Stockage:
+localStorage.setItem('auth_user', JSON.stringify(user));
+localStorage.setItem('auth_token', token);
+```
+
+#### Architecture Supabase-ready
+```typescript
+// service/auth.service.ts
+class AuthService {
+  // Phase 1: localStorage
+  async login(email: string, password: string) {
+    // Logique localStorage
+  }
+  
+  // Phase 2: Remplacer par
+  // return supabase.auth.signInWithPassword({ email, password })
+}
+```
+
+---
+
+### 2. Module Sélection de Produits
+
+#### Catégories de Produits
+
+```typescript
+enum ProductCategory {
+  CLOTHING = 'Vêtements',
+  ACCESSORIES = 'Accessoires',
+  HOME = 'Maison',
+  CUSTOM = 'Personnalisé'
+}
+
+interface Product {
+  id: string;
+  name: string;
+  category: ProductCategory;
+  basePrice: number;
+  modelPath: string;        // Chemin vers modèle 3D
+  textureAreas: TextureArea[];  // Zones personnalisables
+  availableColors: string[];
+  sizes?: string[];
+  description: string;
+  previewImage: string;
+}
+
+interface TextureArea {
+  id: string;
+  name: string;              // "Face avant", "Dos", etc.
+  uvMapping: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  maxDesignSize: {
+    width: number;
+    height: number;
+  };
+}
+```
+
+#### Produits à Implémenter
+
+**Vêtements**:
+- Sweat à capuche (hoodie)
+  - Zones: Face avant, dos, manches, capuche
+  - Tailles: XS, S, M, L, XL, XXL
+  - Couleurs: 10+ options
+  
+- T-shirt
+  - Zones: Face avant, dos
+  - Tailles: XS, S, M, L, XL, XXL
+  - Couleurs: 15+ options
+
+- Écharpe
+  - Zone unique: Surface totale
+  - Taille standard
+  - Couleurs: 8+ options
+
+- Casquette
+  - Zones: Face avant, côtés
+  - Taille ajustable
+  - Couleurs: 10+ options
+
+**Accessoires**:
+- Mug/Tasse
+  - Zone: Surface cylindrique
+  - Capacité: 330ml, 450ml
+  - Couleurs: Blanc, noir, coloré
+
+- Sac tote
+  - Zones: Face avant, dos
+  - Taille standard
+  - Couleurs: Naturel, noir, couleurs
+
+- Coussin
+  - Zones: Recto, verso
+  - Tailles: 40x40, 50x50
+  - Couleurs: Blanc + options
+
+**Maison**:
+- Poster
+  - Format: A4, A3, A2, A1
+  - Finition: Mat, brillant, canvas
+
+- Stickers
+  - Formes: Rond, carré, custom
+  - Tailles: Small, Medium, Large
+
+#### Interface Utilisateur
+
+**Page Produits**:
+```
+┌─────────────────────────────────────────┐
+│  [Filtres]  [Catégories]  [Recherche]   │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐          │
+│  │ 🎽 │ │ 👕 │ │ 🧣 │ │ 🧢 │          │
+│  │ 15€│ │ 12€│ │ 8€ │ │ 10€│          │
+│  └────┘ └────┘ └────┘ └────┘          │
+│                                         │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐          │
+│  │ ☕ │ │ 🛍️ │ │ 🖼️ │ │ 🎨 │          │
+│  │ 9€ │ │ 11€│ │ 15€│ │ 5€ │          │
+│  └────┘ └────┘ └────┘ └────┘          │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Fonctionnalités**:
+- Grille responsive (1, 2, 3, 4 colonnes selon device)
+- Aperçu 3D au survol (mini rotation)
+- Filtres: Prix, catégorie, couleur disponible
+- Tri: Prix, popularité, nouveauté
+- Quick view modal avec détails
+- Bouton "Personnaliser" → Atelier
+
+---
+
+### 3. Module Atelier (CŒUR DE L'APPLICATION)
+
+#### Vue d'Ensemble
+
+L'**Atelier** est le module le plus critique. C'est ici que l'utilisateur crée son design. L'expérience doit être:
+- **Fluide**: 60 FPS minimum
+- **Intuitive**: Drag & drop naturel
+- **Sans erreur**: Gestion robuste des edge cases
+- **Professionnelle**: Rendu 3D réaliste
+
+#### Layout de l'Atelier
+
+```
+┌───────────────────────────────────────────────────────────┐
+│  [Logo] Atelier Enligne    [Sauvegarder] [Partager] [❌]  │
+├─────────────┬─────────────────────────────┬───────────────┤
+│             │                             │               │
+│  PANNEAU    │       VUE 3D               │   PROPRIÉTÉS  │
+│  D'OUTILS   │                             │               │
+│             │    ┌─────────────────┐      │  ┌─────────┐  │
+│  📁 Import  │    │                 │      │  │ Position│  │
+│  📝 Texte   │    │                 │      │  │ Taille  │  │
+│  🎨 Couleur │    │   [PRODUIT 3D]  │      │  │ Rotation│  │
+│  🖼️ Clipart │    │                 │      │  │ Opacité │  │
+│  ⚙️ Filtres │    │                 │      │  │ Couleur │  │
+│             │    └─────────────────┘      │  └─────────┘  │
+│             │                             │               │
+│  CALQUES    │   [< ] [Reset] [ >]         │  [Supprimer]  │
+│  Layer 1 👁️ │   [Zoom -] [+]             │  [Dupliquer]  │
+│  Layer 2 👁️ │                             │  [Avant/Arr]  │
+│             │                             │               │
+└─────────────┴─────────────────────────────┴───────────────┘
+│  [Face] [Dos] [Côté G] [Côté D]  | Produit: T-shirt Blanc│
+└───────────────────────────────────────────────────────────┘
+```
+
+#### Implémentation Babylon.js
+
+**Initialisation de la Scène**:
+```typescript
+// components/atelier/Scene3D.tsx
+import * as BABYLON from '@babylonjs/core';
+import { useEffect, useRef } from 'react';
+
+const Scene3D = ({ productModel, design, onSceneReady }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const engineRef = useRef<BABYLON.Engine | null>(null);
+  const sceneRef = useRef<BABYLON.Scene | null>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    // Créer Engine
+    const engine = new BABYLON.Engine(canvasRef.current, true, {
+      preserveDrawingBuffer: true,
+      stencil: true,
+      antialias: true
+    });
+    engineRef.current = engine;
+
+    // Créer Scene
+    const scene = new BABYLON.Scene(engine);
+    sceneRef.current = scene;
+
+    // Configuration de base
+    scene.clearColor = new BABYLON.Color4(0.95, 0.95, 0.95, 1);
+
+    // Caméra Arc Rotate (rotation autour du produit)
+    const camera = new BABYLON.ArcRotateCamera(
+      "camera",
+      Math.PI / 2,
+      Math.PI / 3,
+      5,
+      BABYLON.Vector3.Zero(),
+      scene
+    );
+    camera.attachControl(canvasRef.current, true);
+    camera.lowerRadiusLimit = 2;
+    camera.upperRadiusLimit = 10;
+    camera.wheelPrecision = 50;
+
+    // Lumières pour rendu réaliste
+    const hemiLight = new BABYLON.HemisphericLight(
+      "hemiLight",
+      new BABYLON.Vector3(0, 1, 0),
+      scene
+    );
+    hemiLight.intensity = 0.7;
+
+    const dirLight = new BABYLON.DirectionalLight(
+      "dirLight",
+      new BABYLON.Vector3(-1, -2, -1),
+      scene
+    );
+    dirLight.intensity = 0.5;
+
+    // Lumière pour reflets
+    const spotLight = new BABYLON.SpotLight(
+      "spotLight",
+      new BABYLON.Vector3(0, 3, 0),
+      new BABYLON.Vector3(0, -1, 0),
+      Math.PI / 3,
+      2,
+      scene
+    );
+    spotLight.intensity = 0.3;
+
+    // Charger le modèle 3D du produit
+    BABYLON.SceneLoader.ImportMesh(
+      "",
+      "/models/",
+      productModel.modelPath,
+      scene,
+      (meshes) => {
+        const product = meshes[0];
+        
+        // Créer matériau PBR pour réalisme
+        const pbr = new BABYLON.PBRMaterial("productMaterial", scene);
+        pbr.albedoColor = new BABYLON.Color3(1, 1, 1);
+        pbr.metallic = 0.0;
+        pbr.roughness = 0.8;
+        
+        // Appliquer à toutes les parties du produit
+        meshes.forEach(mesh => {
+          if (mesh.material) {
+            mesh.material = pbr;
+          }
+        });
+
+        // Prêt à appliquer design
+        onSceneReady(scene, product);
+      }
+    );
+
+    // Render loop
+    engine.runRenderLoop(() => {
+      scene.render();
+    });
+
+    // Resize handler
+    const handleResize = () => {
+      engine.resize();
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      scene.dispose();
+      engine.dispose();
+    };
+  }, [productModel]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ width: '100%', height: '100%', touchAction: 'none' }}
+    />
+  );
+};
+```
+
+**Application de Design sur Texture**:
+```typescript
+// services/babylon.service.ts
+export class BabylonDesignService {
+  
+  // Appliquer un design (logo/image) sur le produit 3D
+  static applyDesignToMesh(
+    mesh: BABYLON.Mesh,
+    designImage: HTMLImageElement,
+    textureArea: TextureArea,
+    scene: BABYLON.Scene
+  ) {
+    // Créer un canvas 2D pour composer la texture
+    const canvas = document.createElement('canvas');
+    canvas.width = 2048;  // Haute résolution
+    canvas.height = 2048;
+    const ctx = canvas.getContext('2d')!;
+
+    // Fond de la couleur du produit
+    ctx.fillStyle = '#FFFFFF';  // ou couleur choisie
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Calculer position et taille du design
+    const { x, y, width, height } = this.calculateDesignPosition(
+      designImage,
+      textureArea,
+      canvas.width,
+      canvas.height
+    );
+
+    // Dessiner le design
+    ctx.drawImage(designImage, x, y, width, height);
+
+    // Créer texture Babylon.js depuis canvas
+    const texture = new BABYLON.Texture(
+      canvas.toDataURL(),
+      scene,
+      false,
+      false,
+      BABYLON.Texture.TRILINEAR_SAMPLINGMODE
+    );
+
+    // Appliquer au matériau du mesh
+    if (mesh.material instanceof BABYLON.PBRMaterial) {
+      mesh.material.albedoTexture = texture;
+    }
+
+    return texture;
+  }
+
+  // Calculer position du design sur texture UV
+  static calculateDesignPosition(
+    image: HTMLImageElement,
+    area: TextureArea,
+    canvasWidth: number,
+    canvasHeight: number
+  ) {
+    const { uvMapping, maxDesignSize } = area;
+    
+    // Convertir coordonnées UV (0-1) en pixels
+    const areaX = uvMapping.x * canvasWidth;
+    const areaY = uvMapping.y * canvasHeight;
+    const areaWidth = uvMapping.width * canvasWidth;
+    const areaHeight = uvMapping.height * canvasHeight;
+
+    // Calculer ratio pour fit dans la zone
+    const scaleX = areaWidth / image.width;
+    const scaleY = areaHeight / image.height;
+    const scale = Math.min(scaleX, scaleY, 1);
+
+    const width = image.width * scale;
+    const height = image.height * scale;
+    
+    // Centrer dans la zone
+    const x = areaX + (areaWidth - width) / 2;
+    const y = areaY + (areaHeight - height) / 2;
+
+    return { x, y, width, height };
+  }
+
+  // Mettre à jour texture en temps réel
+  static updateTexture(
+    texture: BABYLON.DynamicTexture,
+    design: DesignElement[]
+  ) {
+    const ctx = texture.getContext();
+    
+    // Clear
+    ctx.clearRect(0, 0, texture.getSize().width, texture.getSize().height);
+    
+    // Dessiner chaque élément du design
+    design.forEach(element => {
+      if (element.type === 'image') {
+        ctx.drawImage(
+          element.image,
+          element.position.x,
+          element.position.y,
+          element.size.width,
+          element.size.height
+        );
+      } else if (element.type === 'text') {
+        ctx.font = `${element.fontSize}px ${element.fontFamily}`;
+        ctx.fillStyle = element.color;
+        ctx.fillText(
+          element.text,
+          element.position.x,
+          element.position.y
+        );
+      }
+    });
+
+    texture.update();
+  }
+}
+```
+
+#### Gestion des Interactions
+
+**Drag & Drop pour positionner le design**:
+```typescript
+// hooks/use3DInteraction.ts
+export const use3DInteraction = (scene, mesh, onUpdate) => {
+  useEffect(() => {
+    if (!scene || !mesh) return;
+
+    let isDragging = false;
+    let startPoint: BABYLON.Vector3 | null = null;
+
+    const onPointerDown = (evt) => {
+      if (evt.button !== 0) return;
+      
+      const pickResult = scene.pick(scene.pointerX, scene.pointerY);
+      if (pickResult.hit && pickResult.pickedMesh === mesh) {
+        isDragging = true;
+        startPoint = pickResult.pickedPoint;
+      }
+    };
+
+    const onPointerMove = (evt) => {
+      if (!isDragging) return;
+
+      const pickResult = scene.pick(scene.pointerX, scene.pointerY);
+      if (pickResult.hit) {
+        const delta = pickResult.pickedPoint.subtract(startPoint);
+        
+        // Mettre à jour position du design
+        onUpdate({
+          type: 'position',
+          delta: { x: delta.x, y: delta.y }
+        });
+        
+        startPoint = pickResult.pickedPoint;
+      }
+    };
+
+    const onPointerUp = () => {
+      isDragging = false;
+      startPoint = null;
+    };
+
+    scene.onPointerDown = onPointerDown;
+    scene.onPointerMove = onPointerMove;
+    scene.onPointerUp = onPointerUp;
+
+    return () => {
+      scene.onPointerDown = null;
+      scene.onPointerMove = null;
+      scene.onPointerUp = null;
+    };
+  }, [scene, mesh, onUpdate]);
+};
+```
+
+#### Panneau d'Outils
+
+**1. Import de Logo/Image**:
+```typescript
+// components/atelier/ImageUploader.tsx
+import { useDropzone } from 'react-dropzone';
+
+const ImageUploader = ({ onImageUpload }) => {
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/svg+xml': ['.svg']
+    },
+    maxSize: 2 * 1024 * 1024, // 2MB
+    onDrop: async (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
+
+      // Compresser l'image si nécessaire
+      const compressed = await compressImage(file);
+      
+      // Créer HTMLImageElement
+      const img = new Image();
+      img.src = URL.createObjectURL(compressed);
+      img.onload = () => {
+        onImageUpload({
+          id: generateId(),
+          type: 'image',
+          image: img,
+          originalFile: file,
+          position: { x: 0, y: 0 },
+          size: { width: img.width, height: img.height },
+          rotation: 0,
+          opacity: 1
+        });
+      };
+    }
+  });
+
+  return (
+    <div {...getRootProps()} className="border-2 border-dashed p-6">
+      <input {...getInputProps()} />
+      <p>Glissez votre logo ici ou cliquez</p>
+      <p className="text-sm text-gray-500">PNG, JPG, SVG - Max 2MB</p>
+    </div>
+  );
+};
+
+// Utilitaire compression
+async function compressImage(file: File): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+
+    img.onload = () => {
+      // Redimensionner si trop grand
+      let { width, height } = img;
+      const maxDimension = 1024;
+      
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = (height / width) * maxDimension;
+          width = maxDimension;
+        } else {
+          width = (width / height) * maxDimension;
+          height = maxDimension;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob((blob) => {
+        resolve(new File([blob!], file.name, { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.85);
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+}
+```
+
+**2. Outil Texte**:
+```typescript
+// components/atelier/TextTool.tsx
+const TextTool = ({ onAddText }) => {
+  const [text, setText] = useState('');
+  const [fontFamily, setFontFamily] = useState('Arial');
+  const [fontSize, setFontSize] = useState(48);
+  const [color, setColor] = useState('#000000');
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+
+  const fonts = [
+    'Arial', 'Helvetica', 'Times New Roman', 'Courier New',
+    'Georgia', 'Verdana', 'Comic Sans MS', 'Impact',
+    'Montserrat', 'Roboto', 'Open Sans', 'Lato'
+  ];
+
+  const handleAddText = () => {
+    if (!text.trim()) return;
+
+    const textElement: DesignElement = {
+      id: generateId(),
+      type: 'text',
+      text: text,
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      color: color,
+      fontWeight: isBold ? 'bold' : 'normal',
+      fontStyle: isItalic ? 'italic' : 'normal',
+      position: { x: 512, y: 512 }, // Centre du canvas 1024x1024
+      rotation: 0,
+      opacity: 1
+    };
+
+    onAddText(textElement);
+    setText('');
+  };
+
+  return (
+    <div className="space-y-4 p-4">
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Entrez votre texte..."
+        className="w-full p-2 border rounded"
+      />
+
+      <select
+        value={fontFamily}
+        onChange={(e) => setFontFamily(e.target.value)}
+        className="w-full p-2 border rounded"
+      >
+        {fonts.map(font => (
+          <option key={font} value={font}>{font}</option>
+        ))}
+      </select>
+
+      <div className="flex gap-2">
+        <label className="flex-1">
+          Taille
+          <input
+            type="range"
+            min="12"
+            max="200"
+            value={fontSize}
+            onChange={(e) => setFontSize(Number(e.target.value))}
+            className="w-full"
+          />
